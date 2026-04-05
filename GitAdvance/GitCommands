@@ -1,61 +1,329 @@
-Git is distributed means everyne have complete copy of code which has version history and who commited what and when.
-git init -> initialize new git repo
+# Git Fundamentals & Advanced Concepts Guide
+
+---
+
+**1. What is Git?**
+Git is a distributed version control system:
+
+* Every developer has a complete copy of the repository
+* Includes full code, history, and metadata (who committed what and when)
+
+---
+
+**2. Initial Git Setup**
+
+```
+git init
+```
+
+Initialize a new Git repository
+
+```
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
-git remote add origin <github_url_of_repo>  -> for github 
+```
+
+Set global username and email
+
+```
+git remote add origin <github_url_of_repo>
+```
+
+Link local repository to GitHub
+
+---
+
+**3. Basic Workflow Commands**
+
+```
 git add .
+```
+
+Stage all changes
+
+```
 git commit -m <message>
-git checkout <branch-name>
-git branch <branch-name>
-git checkout -b <branch-name>
+```
+
+Commit staged changes
+
+```
 git push -u origin main
+```
 
-git checkout <commit-id> -> got to a particular commit but don't delete any new commit just head is detached which means head is not pointing to latest commit.
-git reset -> if you want to checkout to previous commit as well delete what is after that commit (if can also keep those changes or delete them)
-git reset --soft <commit-hash> -> if we do soft reset -. those commits will still be in working directory in staged changes
-git reset <commit-id> -> mixed reset -> will keep the changes in working directory but not staged
-git reset --hard <commit-id> -> git hard reset discard all after changes
+Push commits to remote repository
 
-git revert -> undo effects without losing commit history
-git revert <commit-id> -> if got conflicts -> resolve and run -> git add . -> git revert --continue
+---
 
-git stash -> let you save uncommitted changes both statged and unstaged
-git status list -> to get list of all stashes
+**4. Branching & Navigation**
+
+```
+git branch <branch-name>
+```
+
+Create a new branch
+
+```
+git checkout <branch-name>
+```
+
+Switch to a branch
+
+```
+git checkout -b <branch-name>
+```
+
+Create and switch to a new branch
+
+---
+
+**5. Working with Commits**
+
+```
+git checkout <commit-hash>
+```
+
+Move to a specific commit
+
+* Causes a detached HEAD state
+* HEAD points to a commit instead of a branch
+* No commits are deleted
+
+---
+
+**6. Relative References (Refs)**
+
+* `^` → Move one commit up
+* `~<num>` → Move multiple commits up
+
+Examples:
+
+```
+main^
+main^^
+HEAD^
+```
+
+```
+git checkout <c3>
+git checkout HEAD^
+```
+
+---
+
+**7. Branch Forcing**
+
+```
+git branch -f main HEAD~3
+```
+
+Forcefully move the main branch 3 commits back
+
+---
+
+**8. Reset vs Revert**
+
+git reset (rewrites history)
+
+```
+git reset --soft <commit-hash>
+```
+
+Keeps changes staged
+
+```
+git reset <commit-id>
+```
+
+Mixed reset (default) → keeps changes unstaged
+
+```
+git reset --hard <commit-id>
+```
+
+Deletes all changes after the commit
+
+---
+
+git revert (safe undo)
+
+```
+git revert <commit-id>
+```
+
+Creates a new commit that undoes changes
+
+If conflicts occur:
+
+```
+git add .
+git revert --continue
+```
+
+---
+
+**9. Git Stash**
+
+```
+git stash
+```
+
+Save uncommitted changes
+
+```
+git status list
+```
+
+List all stashes
+
+```
 git stash apply stash@{0}
+```
 
-Interactive Rebase -> allows you to manipulate commit history
-    change a commit's msg
-    delete commits
-    reorder commits
-    combine multiple commits into one
-    edit/split an existing commit into multiple new ones
-Warning:  do not use interactive rebase on commits that you have already pushed/shared on remote repo
-Steps:
-    what should be the base commit -> git rebase -i HEAD~3  (will open interactive window to change commit msg)
-    In editor only determine which actions you want to perform. Don't change commit data in this step yet.
-    
-git log -oneline -> check commit mag and hash
-To change the lastest commit msg we can just use git ammend but to chnage any commit older than that use rebase
+Apply a stash
 
-git rebase -i HEAD~3   when interactive winsow come write reword in front of commit msg you want to change it will open another interactive window there we can edit commit msg
+---
 
-to combine 2 commits
-Squash keyword -> it will combine the commit and the commit previous to it
+**10. Rebasing**
 
-Cherry pick-> merge single commit only
+Rebasing copies commits and reapplies them to create a linear history
 
-git checkout feature/newbranch -> when we need to cherry pick commit from another branch
-git cherry-pick <commit-hash>
+Example:
 
-git reset --hard HEAD~1 -> to delete last master commit
+Before:
 
-Reflog -> the ref log as git diary. its a journal where git logs every moment of the head pointer.Reflog can also recover deleted commits. we can use the hash
+```
+c0
+ |
+c1 <- main
+ |
+c2 <- feature-branch*
+```
 
-git checkout <feature-branch>
+After:
 
-Submodules which are itslef git repo but not a part of parent repo it only contains it remote url. submodule can be a folder in parent git repo which has its own .git folder. a new file will be created in parent repo which is .gitmodule.
+```
+c0
+ |
+c1
+ |
+c2 <- main*, feature-branch
+```
 
-To find a commit whose commit msg contains a word 
+---
+
+**11. Interactive Rebase**
+
+Allows:
+
+* Change commit message
+* Delete commits
+* Reorder commits
+* Combine commits
+* Split/edit commits
+
+WARNING: Do not use on pushed/shared commits
+
+```
+git rebase -i HEAD~3
+```
+
+To change commit message:
+
+* Replace `pick` with `reword`
+
+---
+
+**12. Squashing Commits**
+
+Use:
+
+```
+squash
+```
+
+Combines a commit with the previous one
+
+---
+
+**13. Viewing History**
+
+```
+git log -oneline
+```
+
+```
 git log --grep="refactor"
-particular author
+```
+
+```
 git log --author="Heinemeir"
+```
+
+---
+
+**14. Amend Commit**
+
+* Used to modify latest commit message
+* For older commits → use interactive rebase
+
+---
+
+**15. Cherry Pick**
+
+```
+git cherry-pick <commit-hash>
+```
+
+Multiple commits:
+
+```
+git cherry-pick <Commit1> <Commit2> <...>
+```
+
+Example:
+
+```
+git checkout feature/newbranch
+git cherry-pick <commit-hash>
+```
+
+---
+
+**16. Delete Last Commit**
+
+```
+git reset --hard HEAD~1
+```
+
+---
+
+**17. Reflog (Recovery Tool)**
+
+* Tracks all HEAD movements
+* Helps recover deleted commits
+
+```
+git checkout <feature-branch>
+```
+
+---
+
+**18. Submodules**
+
+* A submodule is a separate Git repository inside a parent repo
+* Stored as a folder with its own `.git`
+* Parent repo tracks it via `.gitmodules`
+
+---
+
+**19. Key Concepts Summary**
+
+* Detached HEAD → HEAD points to a commit
+* Rebase → clean linear history
+* Reset → rewrites history
+* Revert → safe undo
+* Cherry-pick → copy commits
+* Reflog → recovery tool
+
+
