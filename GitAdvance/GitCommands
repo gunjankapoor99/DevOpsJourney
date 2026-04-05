@@ -1,0 +1,58 @@
+Git is distributed means everyne have complete copy of code which has version history and who commited what and when.
+git init -> initialize new git repo
+git add .
+git commit -m <message>
+git checkout <branch-name>
+git branch <branch-name>
+git checkout -b <branch-name>
+git push -u origin main
+
+git checkout <commit-id> -> got to a particular commit but don't delete any new commit just head is detached which means head is not pointing to latest commit.
+git reset -> if you want to checkout to previous commit as well delete what is after that commit (if can also keep those changes or delete them)
+git reset --soft <commit-hash> -> if we do soft reset -. those commits will still be in working directory in staged changes
+git reset <commit-id> -> mixed reset -> will keep the changes in working directory but not staged
+git reset --hard <commit-id> -> git hard reset discard all after changes
+
+git revert -> undo effects without losing commit history
+git revert <commit-id> -> if got conflicts -> resolve and run -> git add . -> git revert --continue
+
+git stash -> let you save uncommitted changes both statged and unstaged
+git status list -> to get list of all stashes
+git stash apply stash@{0}
+
+Interactive Rebase -> allows you to manipulate commit history
+    change a commit's msg
+    delete commits
+    reorder commits
+    combine multiple commits into one
+    edit/split an existing commit into multiple new ones
+Warning:  do not use interactive rebase on commits that you have already pushed/shared on remote repo
+Steps:
+    what should be the base commit -> git rebase -i HEAD~3  (will open interactive window to change commit msg)
+    In editor only determine which actions you want to perform. Don't change commit data in this step yet.
+    
+git log -oneline -> check commit mag and hash
+To change the lastest commit msg we can just use git ammend but to chnage any commit older than that use rebase
+
+git rebase -i HEAD~3   when interactive winsow come write reword in front of commit msg you want to change it will open another interactive window there we can edit commit msg
+
+to combine 2 commits
+Squash keyword -> it will combine the commit and the commit previous to it
+
+Cherry pick-> merge single commit only
+
+git checkout feature/newbranch -> when we need to cherry pick commit from another branch
+git cherry-pick <commit-hash>
+
+git reset --hard HEAD~1 -> to delete last master commit
+
+Reflog -> the ref log as git diary. its a journal where git logs every moment of the head pointer.Reflog can also recover deleted commits. we can use the hash
+
+git checkout <feature-branch>
+
+Submodules which are itslef git repo but not a part of parent repo it only contains it remote url. submodule can be a folder in parent git repo which has its own .git folder. a new file will be created in parent repo which is .gitmodule.
+
+To find a commit whose commit msg contains a word 
+git log --grep="refactor"
+particular author
+git log --author="Heinemeir"
