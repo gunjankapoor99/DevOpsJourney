@@ -1,5 +1,8 @@
 Git is distributed means everyne have complete copy of code which has version history and who commited what and when.
 git init -> initialize new git repo
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+git remote add origin <github_url_of_repo>  -> for github 
 git add .
 git commit -m <message>
 git checkout <branch-name>
