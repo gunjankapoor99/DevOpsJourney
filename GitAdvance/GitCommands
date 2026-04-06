@@ -326,4 +326,211 @@ git checkout <feature-branch>
 * Cherry-pick → copy commits
 * Reflog → recovery tool
 
+---
 
+**20. Git Tags (Milestones / Anchors)**
+
+Git tags are used to mark specific commits as important milestones.
+
+*Tags act like permanent references to commits
+*Unlike branches, tags do not move when new commits are created
+*They serve as anchors in the commit history
+*You cannot continue development directly on a tag
+
+Example:
+
+git tag t1 commit1
+Create a tag t1 pointing to commit1
+
+---
+
+21. Git Describe
+
+Git provides a command to describe your current position relative to the nearest tag.
+
+This is useful when navigating complex commit history.
+
+*git describe <ref>
+*<ref> can be anything Git resolves to a commit
+*If not provided, Git uses HEAD
+
+Example:
+
+git describe main
+
+Output Format
+
+<tag>-<numCommits>-g<hash>
+
+Where:
+
+*tag → closest ancestor tag
+*numCommits → number of commits since that tag
+*hash → current commit hash
+
+
+---
+
+**22. Specifying Parents in Git (^ vs ~)**
+
+Git provides flexible ways to navigate commit history using ^ and ~.
+
+Understanding the ~ Modifier
+
+~<num> → Move up the commit tree by number of generations
+Follows a single linear path backward
+
+Example:
+
+HEAD~2
+
+Move 2 commits back from HEAD
+
+Understanding the ^ Modifier
+
+^ → Refers to a parent of a commit
+Primarily used with merge commits, which have multiple parents
+
+By default:
+
+^ → first parent
+^2 → second parent
+^3 → third parent (if exists)
+
+Example (Merge Commit Navigation)
+
+*git checkout HEAD^2
+*Assumes current HEAD is a merge commit
+*Moves to the second parent of that merge commit
+
+Key Difference
+
+~ → move back by generations
+^ → choose a specific parent in a merge
+
+Chaining Modifiers
+
+You can combine ~ and ^ for advanced navigation:
+
+HEAD~^2~2
+
+This means:
+
+*Go back one generation (~)
+*Then select second parent (^2)
+*Then go back two more commits (~2)
+
+Creating Branch with Complex Reference
+
+*git branch bug main~^2~
+*Creates a new branch bug
+*Points it to a commit derived from main using chained references
+
+---
+
+
+23. Remote Branches
+
+Remote branches represent the state of a remote repository as of the last time you synced.
+
+Help compare:
+Your local work
+Work available on the remote
+Exist locally, not on the remote itself
+Typically prefixed (e.g., origin/main, often written as o/main)
+
+Key Behavior
+
+When you check out a remote branch → Git puts you in detached HEAD mode
+You cannot directly commit to a remote branch
+You must:
+Work on a local branch
+Then push changes to the remote
+
+---
+
+24. What git fetch Does
+
+git fetch
+
+Performs two main actions:
+
+Downloads commits from remote that are missing locally
+Updates remote-tracking branches (e.g., origin/main / o/main)
+
+Important Notes
+
+Does NOT modify your working directory
+Does NOT merge changes automatically
+Simply updates your local view of the remote repository
+
+---
+
+25. Working with Fetched Changes
+
+After fetching, you can integrate changes using standard Git commands:
+
+git cherry-pick o/main
+git rebase o/main
+git merge o/main
+
+---
+
+26. git pull with Rebase
+
+git pull --rebase
+git push
+
+Explanation:
+
+git pull --rebase:
+Fetches latest changes from remote
+Rebases your local commits on top of updated remote branch
+Keeps history clean and linear
+After resolving conflicts (if any), push changes using git push
+
+---
+
+27. Tracking Remote Branches
+
+You can configure any local branch to track a remote branch.
+
+A tracking branch has:
+Default pull target
+Default push destination
+This allows commands like git push and git pull to work without specifying a branch
+
+Key Concept
+
+A branch does NOT need to have the same name as the remote branch it tracks.
+
+Example:
+
+A branch named totallyNotMain can track o/main
+Running git push from totallyNotMain will push to remote main
+
+Method 1: Create a Tracking Branch While Checking Out
+
+git checkout -b totallyNotMain o/main
+Creates a new branch totallyNotMain
+Automatically sets it to track o/main
+
+Method 2: Set Tracking Using git branch -u
+
+git branch -u o/main foo
+Sets branch foo to track o/main
+
+If the branch is already checked out:
+
+git branch -u o/main
+Sets current branch to track o/main
+
+
+To push a branch commit to another branch
+git push origin sourcebranch:destbranch
+
+Pushing nothing will delete the branch 
+git push origin :foo
+
+Fetching nothing will create the branch
+git fetch origin :bar
