@@ -192,7 +192,7 @@ Commands:
     You can open multiple files, and navigate through them using :n (to go to the next file) and :p (to go to the previous).
     
 
-19. The best use case of tail in my opinion is when called with the -f option. It opens the file at the end, and watches for file changes.
+19. tail -> The best use case of tail in my opinion is when called with the -f option. It opens the file at the end, and watches for file changes.
     Any time there is new content in the file, it is printed in the window. This is great for watching log files, for example:
 
     tail -f /var/log/system.log
@@ -363,8 +363,9 @@ Commands:
     The Linux chmod command
     Every file in the Linux / macOS Operating Systems (and UNIX systems in general) has 3 permissions: read, write, and execute.
 
-    Go into a folder, and run the ls -al command.
 
+27. chmod
+    Go into a folder, and run the ls -al command.
     The weird strings you see on each file line, like drwxr-xr-x, define the permissions of the file or folder.
 
     Let's dissect it.
@@ -425,3 +426,156 @@ Commands:
     chmod 777 filename
     chmod 755 filename
     chmod 644 filename
+    
+
+28. The du command will calculate the size of a directory as a whole:
+    du -> the number it returns is a value expressed in bytes.
+
+    Running du * will calculate the size of each file individually.
+    You can set du to display values in MegaBytes using du -m, and GigaBytes using du -g.
+
+    The -h option will show a human-readable notation for sizes, adapting to the size:
+    Adding the -a option will print the size of each file in the directories, too:
+
+    A handy thing is to sort the directories by size:
+    du -h <directory> | sort -nr | head
+    and then piping to head to only get the first 10 results
+    
+    
+29. The df command is used to get disk usage information. Its basic form will print information about the volumes mounted.
+    Using the -h option (df -h) will show those values in a human-readable format.
+    You can also specify a file or directory name to get information about the specific volume it lives on.
+    
+
+30. basename  -> Suppose you have a path to a file, for example /Users/flavio/test.txt.
+    basename /Users/flavio/test.txt  -> will return the test.txt
+
+    basename /Users/flavio  ->  If you run basename on a path string that points to a directory, you will get the last segment of the path. In this example, /Users/flavio is a directory.
+    
+
+31. dirname -> Suppose you have a path to a file, for example /Users/flavio/test.txt.
+    dirname /Users/flavio/test.txt  -> will return the /Users/flavio string.
+
+
+32. ps  -> Your computer is running tons of different processes at all times.
+    You can inspect them all using the ps command.
+    This gives the list of user-initiated processes currently running in the current session.
+
+    Those are just the commands assigned to the current user. To list all processes we need to pass some options to ps.
+    The most common use is ps ax:
+    The a option is used to also list other users' processes, not just your own. x shows processes not linked to any terminal (not initiated by users through a terminal).
+
+    The longer commands are cut. Use the command ps axww to continue the command listing on a new line instead of cutting it:
+    We need to specify w 2 times to apply this setting (it's not a typo).
+
+    You can search for a specific process combining grep with a pipe, like this:
+    ps axww | grep "Visual Studio Code"
+    The columns returned by ps represent some key information.
+
+    The first information is PID, the process ID. This is key when you want to reference this process in another command, for example to kill it.
+    Then we have TT that tells us the terminal id used.
+    Then STAT tells us the state of the process:
+    I a process that is idle (sleeping for longer than about 20 seconds) R a runnable process S a process that is sleeping for less than about 20 seconds T a stopped process U a process in uninterruptible wait Z a dead process (a zombie)
+    If you have more than one letter, the second represents further information, which can be very technical.
+    It's common to have + which indicates that the process is in the foreground in its terminal. s means the process is a session leader.
+    TIME tells us how long the process has been running.
+   
+   
+33. top  -> The top command is used to display dynamic real-time information about running processes in the system.
+
+    Its usage is simple – you just type top, and the terminal will be fully immersed in this new view:
+    The process is long-running. To quit, you can type the q letter or ctrl-C.
+
+    There's a lot of information being given to us: the number of processes, how many are running or sleeping, the system load, the CPU usage, and a lot more.
+
+    It shows the list of processes taking the most memory and CPU is constantly updated.
+    By default, as you can see from the %CPU column highlighted, they are sorted by the CPU used.
+    You can add a flag to sort processes by memory utilized:  top -o mem
+
+
+34. kill -> Linux processes can receive signals and react to them.
+
+    The kill program can send a variety of signals to a program.
+    It's not just used to terminate a program, like the name would suggest, but that's its main job.
+    We use it in this way:
+    kill <PID>
+    By default, this sends the TERM signal to the process id specified.
+
+    We can use flags to send other signals, including:
+    kill -HUP <PID>
+    kill -INT <PID>
+    kill -KILL <PID>
+    kill -TERM <PID>
+    kill -CONT <PID>
+    kill -STOP <PID>
+    HUP means hang up. It's sent automatically when a terminal window that started a process is closed before terminating the process.
+    INT means interrupt, and it sends the same signal used when we press ctrl-C in the terminal, which usually terminates the process.
+    KILL is not sent to the process, but to the operating system kernel, which immediately stops and terminates the process.
+    TERM means terminate. The process will receive it and terminate itself. It's the default signal sent by kill.
+    CONT means continue. It can be used to resume a stopped process.
+    STOP is not sent to the process, but to the operating system kernel, which immediately stops (but does not terminate) the process.
+
+    You might see numbers used instead, like kill -1 <PID>. In this case,
+    1 corresponds to HUP. 2 corresponds to INT. 9 corresponds to KILL. 15 corresponds to TERM. 18 corresponds to CONT. 15 corresponds to STOP.
+
+
+35. killall  ->  Similar to the kill command, killall will send the signal to multiple processes at once instead of sending a signal to a specific process id.
+
+    This is the syntax:
+    killall <name>  -> where name is the name of a program. For example you can have multiple instances of the top program running, and killall top will terminate them all.
+
+    You can specify the signal, like with kill (and check the kill tutorial to read more about the specific kinds of signals we can send), for example:
+    killall -HUP top
+    
+
+36. jobs ->  When we run a command in Linux / macOS, we can set it to run in the background using the & symbol after the command.
+
+    For example we can run top in the background:
+    top &
+    This is very handy for long-running programs.
+
+    We can get back to that program using the fg command. This works fine if we just have one job in the background, otherwise we need to use the job number: fg 1, fg 2 and so on.
+    To get the job number, we use the jobs command.
+    Say we run top & and then top -o mem &, so we have 2 top instances running. jobs will tell us this:
+
+    Now we can switch back to one of those using fg <jobid>. To stop the program again we can hit cmd-Z.
+    Running jobs -l will also print the process id of each job.
+    
+
+37. bg -> When a command is running you can suspend it using ctrl-Z.
+
+    The command will immediately stop, and you get back to the shell terminal.
+    You can resume the execution of the command in the background, so it will keep running but it will not prevent you from doing other work in the terminal.
+
+    I can run bg 1 to resume in the background the execution of the job #1.
+    I could have also said bg without any option, as the default is to pick the job #1 in the list.
+
+38. fg  -> When a command is running in the background, because you started it with & at the end (example: top & or because you put it in the background with the bg command), you can put it to the foreground using fg.
+
+    Running fg
+    will resume in the foreground the last job that was suspended.
+
+    You can also specify which job you want to resume to the foreground passing the job number, which you can get using the jobs command.
+    Running fg 2 will resume job #2:
+    
+    
+39. type <command> -> A command can be one of those 4 types:
+
+        an executable
+        a shell built-in program
+        a shell function
+        an alias
+    The type command can help figure this out, in case we want to know or we're just curious. It will tell you how the command will be interpreted.
+    
+
+40. which -> Suppose you have a command you can execute, because it's in the shell path, but you want to know where it is located.
+    You can do so using which. The command will return the path to the command specified:
+    which will only work for executables stored on disk, not aliases or built-in shell functions.
+
+
+41. nohop -> Sometimes you have to run a long-lived process on a remote machine, and then you need to disconnect.
+    Or you simply want to prevent the command from being halted if there's any network issue between you and the server.
+    The way to make a command run even after you log out or close the session to a server is to use the nohup command.
+    Use nohup <command> to let the process continue working even after you log out.
+    
+42.  
