@@ -222,4 +222,206 @@ Commands:
     In this case the -m flag will help you get the correct value.
     wc -m test.txt
 
-    
+
+21. grep stands for global regular expression print.
+
+    You can use grep to search in files, or combine it with pipes to filter the output of another command.
+    grep -n document.getElementById index.md  -> For example here's how we can find the occurences of the document.getElementById line in the index.md file
+
+    grep -n document.getElementById index.md  -> Using the -n option it will show the line numbers
+
+    grep -nC 2 document.getElementById index.md  -> One very useful thing is to tell grep to print 2 lines before and 2 lines after the matched line to give you more context. That's done using the -C option, which accepts a number of lines.
+
+    Search is case sensitive by default. Use the -i flag to make it insensitive.
+
+    less index.md | grep -n document.getElementById  -> you can use grep to filter the output of another command. We can replicate the same functionality as above using.
+
+    The search string can be a regular expression, and this makes grep very powerful.
+    Another thing you might find very useful is to invert the result, excluding the lines that match a particular string, using the -v option.
+
+
+22. sort filename -> Suppose you have a text file which contains the names of dogs:
+
+    This list is unordered. The sort command helps you sort them by name.
+
+    Use the r option to reverse the order.
+    Sorting by default is case sensitive, and alphabetic. Use the --ignore-case option to sort case insensitive, and the -n option to sort using a numeric order.
+
+    If the file contains duplicate lines. You can use the -u option to remove them.
+
+    sort does not just work on files, as many UNIX commands do – it also works with pipes. So you can use it on the output of another command. For example you can order the files returned by ls with:
+    ls | sort
+   
+
+23. uniq is a command that helps you sort lines of text.
+    You can get those lines from a file, or using pipes from the output of another command:
+    uniq dogs.txt
+
+    ls | uniq
+    You need to consider this key thing: uniq will only detect adjacent duplicate lines.
+    This implies that you will most likely use it along with sort:
+    sort dogs.txt | uniq
+    The sort command has its own way to remove duplicates with the -u (unique) option. But uniq has more power.
+
+    By default it removes duplicate lines.
+    You can tell it to only display duplicate lines, for example, with the -d option:
+    sort dogs.txt | uniq -d
+
+    You can use the -u option to only display non-duplicate lines:
+
+    You can count the occurrences of each line with the -c option:
+    Use the special combination
+    sort dogs.txt | uniq -c | sort -nr
+    to then sort those lines by most frequent
+
+
+24. diff is a handy command. Suppose you have 2 files, which contain almost the same information, but you can't find the difference between the two.
+    diff will process the files and will tell you what's the difference.
+    Suppose you have 2 files: dogs.txt and moredogs.txt. The difference is that moredogs.txt contains one more dog name:
+
+    diff dogs.txt moredogs.txt  -> will tell you the second file has one more line, line 3 with the line Vanille.
+    If you invert the order of the files, it will tell you that the second file is missing line 3, whose content is Vanille.
+
+    Using the -y option will compare the 2 files line by line:
+
+    The -u option however will be more familiar to you, because that's the same used by the Git version control system to display differences between versions:
+
+    Comparing directories works in the same way. You must use the -r option to compare recursively (going into subdirectories):
+    In case you're interested in which files differ, rather than the content, use the r and q options:
+
+
+25. The echo command does one simple job: it prints to the output the argument passed to it.
+
+    echo "hello"
+    will print hello to the terminal.
+
+    We can append the output to a file:
+
+    echo "hello" >> output.txt
+    We can interpolate environment variables:
+
+    echo "The path variable is $PATH"
+    Beware that special characters need to be escaped with a backslash \. $ for example:
+
+    This is just the start. We can do some nice things when it comes to interacting with the shell features.
+
+    We can echo the files in the current folder:
+
+    echo *
+    We can echo the files in the current folder that start with the letter o:
+
+    echo o*
+    Any valid Bash (or any shell you are using) command and feature can be used here.
+
+    You can print your home folder path:
+
+    echo ~
+
+    You can also execute commands, and print the result to the standard output (or to file, as you saw):
+
+    echo $(ls -al)
+    Note that whitespace is not preserved by default. You need to wrap the command in double quotes to do so:
+
+    You can generate a list of strings, for example ranges:
+
+    echo {1..5}
+
+
+26. Every file/directory in an Operating System like Linux or macOS (and every UNIX system in general) has an owner.
+
+    The owner of a file can do everything with it. It can decide the fate of that file.
+
+    The owner (and the root user) can change the owner to another user, too, using the chown command:
+
+    chown <owner> <file>
+    Like this:
+
+    chown flavio test.txt
+    For example if you have a file that's owned by root, you can't write to it as another user:
+
+    echo test >> test.txt   error permission denied
+
+    You can use chown to transfer the ownership to you:
+
+    sudo chown gunjan test.txt
+    echo test >> test.txt
+
+    It's rather common to need to change the ownership of a directory, and recursively all the files contained, plus all the subdirectories and the files contained in them, too.
+
+    You can do so using the -R flag:
+
+    chown -R <owner> <file>
+    Files/directories don't just have an owner, they also have a group. Through this command you can change that simultaneously while you change the owner:
+
+    chown <owner>:<group> <file>
+    Example:
+
+    chown flavio:users test.txt
+    You can also just change the group of a file using the chgrp command:
+
+    chgrp <group> <filename>
+    The Linux chmod command
+    Every file in the Linux / macOS Operating Systems (and UNIX systems in general) has 3 permissions: read, write, and execute.
+
+    Go into a folder, and run the ls -al command.
+
+    The weird strings you see on each file line, like drwxr-xr-x, define the permissions of the file or folder.
+
+    Let's dissect it.
+
+    The first letter indicates the type of file:
+
+    - means it's a normal file
+    d means it's a directory
+    l means it's a link
+    Then you have 3 sets of values:
+
+    The first set represents the permissions of the owner of the file
+    The second set represents the permissions of the members of the group the file is associated to
+    The third set represents the permissions of the everyone else
+    Those sets are composed by 3 values. rwx means that specific persona has read, write and execution access. Anything that is removed is swapped with a -, which lets you form various combinations of values and relative permissions: rw-, r--, r-x, and so on.
+
+    You can change the permissions given to a file using the chmod command.
+
+    chmod can be used in 2 ways. The first is using symbolic arguments, the second is using numeric arguments. Let's start with symbols first, which is more intuitive.
+
+    You type chmod followed by a space, and a letter:
+
+    a stands for all
+    u stands for user
+    g stands for group
+    o stands for others
+    Then you type either + or - to add a permission, or to remove it. Then you enter one or more permission symbols (r, w, x).
+
+    All followed by the file or folder name.
+
+    Here are some examples:
+
+    chmod a+r filename #everyone can now read
+    chmod a+rw filename #everyone can now read and write
+    chmod o-rwx filename #others (not the owner, not in the same group of the file) cannot read, write or execute the file
+    You can apply the same permissions to multiple personas by adding multiple letters before the +/-:
+
+    chmod og-r filename #other and group can't read any more
+    In case you are editing a folder, you can apply the permissions to every file contained in that folder using the -r (recursive) flag.
+
+    Numeric arguments are faster but I find them hard to remember when you are not using them day to day. You use a digit that represents the permissions of the persona. This number value can be a maximum of 7, and it's calculated in this way:
+
+    1 if has execution permission
+    2 if has write permission
+    4 if has read permission
+    This gives us 4 combinations:
+
+    0 no permissions
+    1 can execute
+    2 can write
+    3 can write, execute
+    4 can read
+    5 can read, execute
+    6 can read, write
+    7 can read, write and execute
+    We use them in pairs of 3, to set the permissions of all the 3 groups altogether:
+
+    chmod 777 filename
+    chmod 755 filename
+    chmod 644 filename
