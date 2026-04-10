@@ -725,3 +725,152 @@ Commands:
     The request sends a packet to the server with the ECHO_REQUEST message, and the server returns a ECHO_REPLY message.
     Pinging a host is useful to know if the host is reachable (supposing it implements ping), and how distant it is in terms of how long it takes to get back to you.
     Usually the nearer the server is geographically, the less time it will take to return back to you. Simple physical laws cause a longer distance to introduce more delay in the cables.
+    
+    
+ 52. traceroute -> When you try to reach a host on the Internet, you go through your home router. Then you reach your ISP network, which in turn goes through its own upstream network router, and so on, until you finally reach the host.
+
+    Have you ever wanted to know what steps your packets go through to do that?
+    The traceroute command is made for this.
+    You invoke
+    traceroute <host> -> and it will (slowly) gather all the information while the packet travels.
+
+    Not every router travelled returns us information. In this case, traceroute prints * * *. Otherwise, we can see the hostname, the IP address, and some performance indicator.
+    For every router we can see 3 samples, which means traceroute tries by default 3 times to get you a good indication of the time needed to reach it.
+    This is why it takes this long to execute traceroute compared to simply doing a ping to that host.
+
+    traceroute -q 1 flaviocopes.com  -> You can customize this number with the -q option
+    
+
+53. clear ->  Type clear to clear all the previous commands that were run in the current terminal.
+    The screen will clear and you will just see the prompt at the top/
+    Note: this command has a handy shortcut: ctrl-L
+
+    Once you do that, you will lose access to scrolling to see the output of the previous commands entered.
+    So you might want to use clear -x instead, which still clears the screen, but lets you go back to see the previous work by scrolling up.
+
+54. history -> Every time you run a command, it's memorized in the history.
+
+    You can display all the history using:  history
+    This shows the history with numbers (id for each command)
+
+    You can use the syntax !<command number> to repeat a command stored in the history. In the above example typing !121 will repeat the ls -al | wc -l command.
+
+    Typically the last 500 commands are stored in the history.
+    history | grep docker -> You can combine this with grep to find a command you ran.
+
+    To clear the history, run history -c.
+
+
+55. export -> The export command is used to export variables to child processes.
+
+    What does this mean? Suppose you have a variable TEST defined in this way.
+    TEST="test"
+    You can print its value using echo $TEST.
+
+    But if you try defining a Bash script in a file script.sh with the above command
+    Then when you set chmod u+x script.sh and you execute this script with ./script.sh, the echo $TEST line will print nothing!
+
+    This is because in Bash the TEST variable was defined local to the shell. When executing a shell script or another command, a subshell is launched to execute it, which does not contain the current shell local variables.
+
+    To make the variable available there we need to define TEST not in this way: TEST="test"
+    but in this way: export TEST="test"
+    Try that, and running ./script.sh now should print "test":
+
+    Sometimes you need to append something to a variable. It's often done with the PATH variable. You use this syntax:
+    export PATH=$PATH:/new/path
+    It's common to use export when you create new variables in this way. But you can also use it when you create variables in the .bash_profile or .bashrc configuration files with Bash, or in .zshenv with Zsh.
+
+    To remove a variable, use the -n option: export -n TEST
+    Calling export without any option will list all the exported variables.
+
+
+56. crontab -> Cron jobs are jobs that are scheduled to run at specific intervals. You might have a command perform something every hour, or every day, or every 2 weeks. Or on weekends.
+    They are very powerful, especially when used on servers to perform maintenance and automations.
+    The crontab command is the entry point to work with cron jobs.
+    
+    The first thing you can do is to explore which cron jobs are defined by you:
+    crontab -l
+    You might have none, like me:
+
+    Run  crontab -e  to edit the cron jobs, and add new ones.
+    By default this opens with the default editor, which is usually vim. I like nano more. You can use this line to use a different editor:
+    EDITOR=nano crontab -e
+    Now you can add one line for each cron job.
+
+    generate crontab without errors: https://crontab-generator.org/
+    You pick a time interval for the cron job, and you type the command to execute.
+    I chose to run a script located in /Users/flavio/test.sh every 12 hours. This is the crontab line I need to run:
+    * */12 * * * /Users/flavio/test.sh >/dev/null 2>&1
+    I run crontab -e:
+    EDITOR=nano crontab -e
+    and I add that line, then I press ctrl-X and press y to save.
+
+    If all goes well, the cron job is set up:
+    Once this is done, you can see the list of active cron jobs by running:
+    crontab -l
+    You can remove a cron job running crontab -e again, removing the line and exiting the editor:
+
+
+57. uname  -> Calling uname without any options will return the Operating System codename:
+    The m option shows the hardware name (x86_64 in this example) and the p option prints the processor architecture name (i386 in this example):
+    The s option prints the Operating System name. r prints the release, and v prints the version:
+    The n option prints the node network name:
+    The a option prints all the information available:
+
+    On macOS you can also use the sw_vers command to print more information about the macOS Operating System. Note that this differs from the Darwin (the Kernel) version, which above is 19.6.0.
+    Darwin is the name of the kernel of macOS. The kernel is the "core" of the Operating System, while the Operating System as a whole is called macOS. In Linux, Linux is the kernel, and GNU/Linux would be the Operating System name (although we all refer to it as "Linux").
+
+
+58. env -> The env command can be used to pass environment variables without setting them on the outer environment (the current shell).
+
+    Suppose you want to run a Node.js app and set the USER variable to it.
+    You can run  -> env USER=flavio node app.js
+    and the USER environment variable will be accessible from the Node.js app via the Node process.env interface.
+
+    You can also run the command clearing all the environment variables already set, using the -i option:
+    env -i node app.js
+    In this case you will get an error saying env: node: No such file or directory because the node command is not reachable, as the PATH variable used by the shell to look up commands in the common paths is unset.
+
+    So you need to pass the full path to the node program:
+    env -i /usr/local/bin/node app.js
+    Try with a simple app.js file with this content:
+    console.log(process.env.NAME)
+    console.log(process.env.PATH)
+    You will see the output as
+    undefined
+    undefined
+    
+    You can pass an env variable:
+    env -i NAME=flavio node app.js
+    and the output will be
+    flavio
+    undefined
+    
+    Removing the -i option will make PATH available again inside the program:
+
+    The env command can also be used to print out all the environment variables. If run with no options:
+    env
+    it will return a list of the environment variables set, for example:
+
+    HOME=/Users/flavio
+    LOGNAME=flavio
+    PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
+    PWD=/Users/flavio
+    SHELL=/usr/local/bin/fish
+    You can also make a variable inaccessible inside the program you run, using the -u option. For example this code removes the HOME variable from the command environment:
+    env -u HOME node app.js
+    
+    
+59. printenv -> used to print the values of environment variables
+    In any shell there are a good number of environment variables, set either by the system, or by your own shell scripts and configuration.
+
+    You can print them all to the terminal using the printenv command. The output will be something like this:
+    HOME=/Users/flavio
+    LOGNAME=flavio
+    PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
+    PWD=/Users/flavio
+    SHELL=/usr/local/bin/fish
+    with a few more lines, usually.
+
+    You can append a variable name as a parameter, to only show that variable value:
+    printenv PATH
