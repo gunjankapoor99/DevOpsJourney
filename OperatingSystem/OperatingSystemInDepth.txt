@@ -1,0 +1,6 @@
+An Operating System (OS) is an interface between a computer user and computer hardware. An operating system is a software which performs all the basic tasks like file management, memory management, process management, handling input and output, and controlling peripheral devices such as disk drives and printers.
+
+An operating system is software that enables applications to interact with a computer's hardware. The software that contains the core components of the operating system is called the kernel.
+
+The primary purposes of an Operating System are to enable applications (spftwares) to interact with a computer's hardware and to manage a system's hardware and software resources.
+
