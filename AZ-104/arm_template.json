@@ -9,7 +9,7 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2025-01-01",
-      "name": "learntemplatestorage123",
+      "name": "templatestorage99random",
       "location": "westus",
       "sku": {
         "name": "Standard_LRS"
