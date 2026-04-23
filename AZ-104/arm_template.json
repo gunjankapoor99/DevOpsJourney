@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.1",
+  "apiProfile": "",
+  "parameters": {},
+  "variables": {},
+  "functions": [],
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2025-01-01",
+      "name": "learntemplatestorage123",
+      "location": "westus",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "supportsHttpsTrafficOnly": true
+      }
+    }
+  ],
+  "outputs": {}
+}
+
+// CLI
+// templateFile="{"D:\DevOpsJourney\AZ-104\arm_template.json"}"
+// az deployment group create --name blanktemplate --resource-group cloudshell-rg --template-file $templateFile
+
+
+// Powershell
+// $templateFile = "D:\DevOpsJourney\AZ-104\arm_template.json"
+// New-AzResourceGroupDeployment `
+//   -Name blanktemplate `
+//   -ResourceGroupName  cloudshell-rg `
+//   -TemplateFile $templateFile
